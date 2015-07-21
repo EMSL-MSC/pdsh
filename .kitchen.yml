@@ -1,15 +1,29 @@
----
 driver:
   name: vagrant
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
+  client_rb:
+    environment: kitchen
 
 platforms:
   - name: ubuntu-14.04
+    run_list:
+      - recipe[apt]
+  - name: centos-6.6
+    run_list:
+      - recipe[selinux::permissive]
+      - recipe[yum-epel]
   - name: centos-7.1
+    run_list:
+      - recipe[firewalld::disable]
+      - recipe[yum-epel]
+
+data_bags_path:    test/integration/data_bags/
+roles_path:        test/integration/roles/
+environments_path: test/integration/environments
 
 suites:
-  - name: default
+  - name: pdsh-default
     run_list:
-    attributes:
+      - role[pdsh_test]
